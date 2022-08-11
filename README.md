@@ -44,11 +44,13 @@ let theme={"secondHandColor" : "Blue" ,
 
 there are two styling options:
 
-## 1. extrensic theme:
+## 1. extrinsic styling system:
+
+This styling system makes use of vector art in order to give our clock the desired look. 
 
 theme object structure:
 ```
-extrensicThemeObject = {
+extrinsicThemeObject = {
  "secondHandSrc" : [path to second hand image] ,
  "minuteHandSrc": [path to minute hand image],
  "hourHandSrc":  [path to hour hand image],
@@ -71,22 +73,25 @@ The main principle is, that there's a pivot point in the clock hand images. This
  "handPivotSY": 0.5
 {
 ```
-### Value:
-- handPivotSY: value represents the ratio of the distance between the pivot point and the upper border of the second hand image to the total height of the second hand image.
+### Values:
+- handPivotSY: a value that represents the ratio of the distance between the pivot point and the upper border of the second hand image to the total height of the second hand image.
 
-- handPivotSX: value represents the ratio of the distance between the pivot point and the left border of the second hand image to the total width of the second hand image.
+- handPivotSX: a value that represents the ratio of the distance between the pivot point and the left border of the second hand image to the total width of the second hand image.
 
-- handPivotMY: value represents the ratio of the distance between the pivot point and the upper border of the second hand image to the total height of the minute hand image.
+- handPivotMY: a value that represents the ratio of the distance between the pivot point and the upper border of the minute hand image to the total height of the minute hand image.
 
-- handPivotMX: value represents the ratio of the distance between the pivot point and the left border of the second hand image to the total width of the minute hand image.
+- handPivotMX: a value that represents the ratio of the distance between the pivot point and the left border of the minute hand image to the total width of the minute hand image.
 
-- handPivotHY: value represents the ratio of the distance between the pivot point and the upper border of the second hand image to the total height of the hour hand image.
+- handPivotHY: a value that represents the ratio of the distance between the pivot point and the upper border of the hour hand image to the total height of the hour hand image.
 
-- handPivotHX: value represents the ratio of the distance between the pivot point and the left border of the second hand image to the total width of the hour hand image.
+- handPivotHX: a value that represents the ratio of the distance between the pivot point and the left border of the hour hand image to the total width of the hour hand image.
+
+### here is a visual presentation of the extrinsic styling system:
+
+![](https://user-images.githubusercontent.com/20050723/184260479-e3f79be7-6005-4e89-a675-3e3c29ca7d57.png)
 
 
-
-## 2. internsic theme 
+## 2. intrinsic styling system:
 
 
 
