@@ -7,7 +7,7 @@
 //  Description: A simple, yet powerfull and easy modifiable analog clock for you website, made with pure Javascript
 // ===========================================================================================================
 
-class clock {
+class MagicClock {
     #clockCentralX = 100;
     #clockCentralY = 100;
     #hours;
