@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title> Magic clock showcase </title>
+<script src="MagicClock.js"> </script>
+
+</head>
+<body style="background-image: url('https://www.eea.europa.eu/themes/biodiversity/state-of-nature-in-the-eu/state-of-nature-2020-subtopic/image_print');" >
+
+
+<script>
+
+// external themes, using PNG or vector art resources 
+let theme1={"secondHandSrc" : "themes/Theme1/Seconds.png" ,
+ "minuteHandSrc":"themes/Theme1/Minutes.png",
+ "hourHandSrc":"themes/Theme1/Hours.png",
+ "backgroundSrc":"themes/Theme1/BG.png",
+ "handPivotHX": 0.5,
+ "handPivotHY": 0.72,
+ "handPivotMX": 0.5,
+ "handPivotMY": 0.72,
+ "handPivotSX": 0.5,
+ "handPivotSY": 0.72
+ };
+let theme2={"secondHandSrc" : "themes/Theme2/seconds.png" ,
+ "minuteHandSrc":"themes/Theme2/minutes.png",
+ "hourHandSrc":"themes/Theme2/hours.png",
+ "backgroundSrc":"themes/Theme2/BG.png",
+ "handPivotHX": 0.5,
+ "handPivotHY": 0.9,
+ "handPivotMX": 0.5,
+ "handPivotMY": 0.9,
+ "handPivotSX": 0.5,
+ "handPivotSY": 0.8
+ };
+
+// intrinsic basic theme using primitive shapes lines, circles, etc...
+let theme3={"secondHandColor" : "Red" ,
+ "minuteHandColor":"Black",
+ "hourHandColor":"Black",
+ "backgroundColor":"White"
+ };
+
+
+let myClockThemeDefault = new MagicClock( 20, 20 , 250 );
+
+let myClockTheme3 = new MagicClock( 300, 300 , 250, theme3 );
+
+let myClockTheme1 = new MagicClock( 20, 300 , 250, theme1 );
+
+let myClockTheme2 = new MagicClock( 300, 20 , 250, theme2 );
+
+
+</script>
+</body>
+
+</html>
