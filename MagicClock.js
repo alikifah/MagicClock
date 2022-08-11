@@ -20,10 +20,6 @@ class MagicClock {
     #pivotPointMY = 0;
     #pivotPointSX = 0;
     #pivotPointSY = 0;
-    #secondHandImg = new Image();
-    #minuteHandImg = new Image();
-    #hourHandImg = new Image();
-    #BGImg = new Image();
     #loader;
     #canvas = null;
     #ctx = null;
