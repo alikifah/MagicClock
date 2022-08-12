@@ -93,6 +93,19 @@ The main principle is, that there's a pivot point in the clock hand images. This
 
 ## 2. intrinsic styling system:
 
+intrinsic system is much simpler.
 
+the theme structure of this system looks like this:
 
+```
+ theme={
+ "secondHandColor" : [color value] ,
+ "minuteHandColor":[color value],
+ "hourHandColor": [color value],
+ "backgroundColor": [color value],
+ "borderColor": [color value], 
+ "timePointMarkerColor": [color value] ,
+ "centralPointColor": [color value] 
+ }
+ ```
 
