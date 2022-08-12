@@ -4,7 +4,7 @@
 //    		MagicClock
 //	Author: Al-Khafaji, Ali Kifah
 //	Date:   11.08.2022
-//  Description: A simple, yet powerfull and easy modifiable analog clock for you website, made with pure Javascript
+//  Description: A simple, yet powerful and easy modifiable analog clock for your website, made with pure Javascript
 // ===========================================================================================================
 
 class MagicClock {
