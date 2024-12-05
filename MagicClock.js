@@ -38,6 +38,10 @@ class MagicClock {
     #timePointMarkerColor;
     #centralPointColor;
 
+
+
+	#captions = [];
+
     constructor(PositionX, PositionY, width, theme = null) {
         if (width < 220)
             width = 220;
@@ -53,6 +57,8 @@ class MagicClock {
             else
                 this.#loadTheme(theme, this.#loadingComplete.bind(this), this.#onError.bind(this));
         }
+		
+		
     }
     #initCanvas(canvasX, canvasY, w) {
         let canvas = document.createElement('canvas');
@@ -67,6 +73,10 @@ class MagicClock {
         canvas.style.position = "absolute";
         return canvas;
     }
+	
+
+	
+	
     #isValidTheme(theme) {
         if (this.#isObject(theme)) {
             if ((this.#isValidColor(theme["secondHandColor"]) &&
@@ -139,12 +149,32 @@ class MagicClock {
             (this.#loader.get('BGImg').height - this.#shadowWidth) * this.#scale);
         context.restore();
     }
+	
+	// main render loop 
     #loop() {
         this.#updateTime();
         this.#renderBg(this.#ctx);
-        this.#drawClockImage(this.#hours, this.#minutes, this.#seconds);
+        		
+		// render captions
+		for (let i = 0; i < this.#captions.length; i++) {
+		this.#renderText(this.#captions[i].text ,
+						this.#clockRadius +  ( this.#scale * this.#captions[i].x )  ,
+						this.#clockRadius +  ( this.#scale * this.#captions[i].y ),
+						this.#captions[i].font,
+						this.#captions[i].color
+						);
+		}		
+
+		this.#renderClock(this.#hours, this.#minutes, this.#seconds);	
     }
-    #drawClockImage(hour, minute, second) {
+	
+	
+	addCaption(t, x, y, font = 'bold 20px Arial', color = 'black'){
+		const caption = new Caption(t, x, y, font, color );
+		this.#captions.push(caption);
+	}
+	
+    #renderClock(hour, minute, second) {
         let hoursHandAngle = this.#getClockAngle(hour, true);
         this.#renderHand(this.#ctx, this.#loader.get('hourHandImg'), this.#pivotPointHX, this.#pivotPointHY, this.#clockRadius, this.#clockRadius, this.#scale, hoursHandAngle);
 
@@ -162,6 +192,15 @@ class MagicClock {
         this.#seconds = time.getSeconds();
     }
 
+
+	#renderText(text, x, y, font, color) {
+    this.#ctx.font = font; 
+    this.#ctx.fillStyle = color; 
+    this.#ctx.fillText(text, x, y);
+	
+	}
+	
+	
     //#################################################################
     //#########   Basic themes... (no external images) ##################
     //#################################################################
@@ -376,3 +415,14 @@ class imageLoader {
     }
     getAll() { return this.#images; }
 }// end class image loader
+
+
+class Caption {
+	 constructor(text, x, y, font, color) {
+		this.text=text;
+		this.x=x;
+		this.y=y;			
+		this.font=font;
+		this.color=color;	
+	 }
+}
