@@ -45,12 +45,19 @@ let theme3={"secondHandColor" : "Red" ,
 
 
 let myClockThemeDefault = new MagicClock( 20, 20 , 250 );
-
 let myClockTheme3 = new MagicClock( 300, 300 , 250, theme3 );
+let myClockTheme2 = new MagicClock( 300, 20 , 250, theme2 );
 
+
+// clock with captions
 let myClockTheme1 = new MagicClock( 20, 300 , 250, theme1 );
 
-let myClockTheme2 = new MagicClock( 300, 20 , 250, theme2 );
+myClockTheme1.addCaption( new Date().getDate() , 80 , 2, 'bold 20px Arial' , 'black' );
+
+myClockTheme1.addCaption( "Rolex" , -40 , 115, 'bold 20px Courier' , 'black' );
+
+
+
 
 
 </script>
