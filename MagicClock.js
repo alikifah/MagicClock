@@ -156,18 +156,21 @@ class MagicClock {
         this.#renderBg(this.#ctx);
         		
 		// render captions
-		for (let i = 0; i < this.#captions.length; i++) {
-		this.#renderText(this.#captions[i].text ,
-						this.#clockRadius +  ( this.#scale * this.#captions[i].x )  ,
-						this.#clockRadius +  ( this.#scale * this.#captions[i].y ),
-						this.#captions[i].font,
-						this.#captions[i].color
-						);
-		}		
+		this.#renderCaptions();		
 
 		this.#renderClock(this.#hours, this.#minutes, this.#seconds);	
     }
 	
+	#renderCaptions(){
+		for (let i = 0; i < this.#captions.length; i++) {
+			this.#renderText(this.#captions[i].text ,
+						this.#clockRadius +  this.#captions[i].x  ,
+						this.#clockRadius +   this.#captions[i].y ,
+						this.#captions[i].font,
+						this.#captions[i].color
+						);
+		}	
+	}
 	
 	addCaption(t, x, y, font = 'bold 20px Arial', color = 'black'){
 		const caption = new Caption(t, x, y, font, color );
@@ -240,15 +243,15 @@ class MagicClock {
     }
     #initializeClockBasic() {
         this.#updateTime();
-        this.#drawClockBasic(this.#hours, this.#minutes, this.#seconds);
+        this.#renderClockBasic(this.#hours, this.#minutes, this.#seconds);
         setInterval(function () {
             this.#cls();
             this.#updateTime();
-            this.#drawClockBasic(this.#hours, this.#minutes, this.#seconds);
+            this.#renderClockBasic(this.#hours, this.#minutes, this.#seconds);
         }.bind(this), 1000);
     }
 
-    #drawClockBasic(hour, minute, second) {
+    #renderClockBasic(hour, minute, second) {
         hour += this.#hourHandRotationCorrection;
         minute += this.#secondMinuteHandRotationCorrection;
         second += this.#secondMinuteHandRotationCorrection;
@@ -272,7 +275,11 @@ class MagicClock {
         this.#line(0 + this.#clockRadius, 0 + this.#clockRadius, xS + this.#clockRadius, yS + this.#clockRadius, 1, this.#secondHandColor);
 
         this.#circle(this.#clockRadius, this.#clockRadius, 5, 1, this.#centralPointColor, true);
-        // draw markers 
+        		
+		// render captions
+		this.#renderCaptions();		
+		
+		// draw markers 
         let radius = (this.#clockRadius - this.#shadowWidth - this.#frameWidth) * 0.9;
         for (let i = 0; i < 60; i++) {
             if (i % 15 === 0)
@@ -293,10 +300,15 @@ class MagicClock {
     }
 
     #bGPrimitive() { this.#circle(this.#clockRadius, this.#clockRadius, this.#clockRadius - this.#shadowWidth - this.#frameWidth, 1, this.#backgroundColor, true); }
-    #frame() {
+    
+	
+	
+	
+	#frame() {
         this.#circle(this.#clockRadius, this.#clockRadius,
             this.#clockRadius - this.#shadowWidth - this.#frameWidth,
             this.#frameWidth, this.#borderColor);
+			
     }
 
     #line(startX, startY, endX, endY, thickness = 1, color = "black") {
@@ -415,6 +427,8 @@ class imageLoader {
     }
     getAll() { return this.#images; }
 }// end class image loader
+
+
 
 
 class Caption {
