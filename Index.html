@@ -63,6 +63,7 @@ myClockTheme1.addCaption( "brand" ,"Rolex" , -30 , 80 , 'bold 20px Courier' , 'b
 
 //add an event that gets triggered at a specific time
 //the event changes the caption with the id "brand" to "hello world!"
+//the event is set to be repeated each day(but it makes no sense, since no one will keep the webpage open for 24h any way!!)
 myClockTheme1.addEvent("tick", 19,15,40, ()=>{
 	myClockTheme1.setCaptionText("brand"  , "hello world!");
 } , true);
