@@ -47,7 +47,7 @@ class MagicClock {
 
 	addEvent(id, hour, minute, second, action, isRepeat = true ){		
 		let colockEvent = new ClockEvent(id, hour, minute, second, action, isRepeat);		
-		this.#clockEvents.set(id, colockEvent);	
+        this.#clockEvents.set(id, colockEvent);	
 	}
 	removeEvent(id){
 		this.#clockEvents.get(id).dispose();
@@ -58,7 +58,6 @@ class MagicClock {
 		for (let [id, value] of this.#clockEvents) {
 			if (value.isDue(this.#hours, this.#minutes, this.#seconds ))
 			{
-				console.log(value.hour + "/" + value.minute + "/" + value.second); 
 				value.invoke();
 				if (!value.isRepeat)
 					this.removeEvent(id);
