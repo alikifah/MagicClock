@@ -61,10 +61,11 @@ let myClockTheme1 = new MagicClock( 20, 300 , 250, theme1 );
 myClockTheme1.addCaption("date", new Date().getDate() , 50 , 2, 'bold 20px Arial' , 'black' );
 myClockTheme1.addCaption( "brand" ,"Rolex" , -30 , 80 , 'bold 20px Courier' , 'black' );
 
-
+//add an event that gets triggered at a specific time
+//the event changes the caption with the id "brand" to "hello world!"
 myClockTheme1.addEvent("tick", 19,15,40, ()=>{
-	myClockTheme1.setCaptionText("brand"  , "hello ");
-} );
+	myClockTheme1.setCaptionText("brand"  , "hello world!");
+} , true);
 
 
 
