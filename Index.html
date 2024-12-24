@@ -43,21 +43,28 @@ let theme3={"secondHandColor" : "Red" ,
  "backgroundColor":"White"
  };
 
-
+// clock with basic default theme with no caption
 let myClockThemeDefault = new MagicClock( 20, 20 , 250 );
 
 
-// clocks with captions
+// clock with captions
 let myClockTheme3 = new MagicClock( 300, 300 , 250, theme3 );
-myClockTheme3.addCaption( new Date().getDate() , 50 , 2, 'bold 20px Arial' , 'black' );
+myClockTheme3.addCaption("date" ,new Date().getDate() , 50 , 2, 'bold 20px Arial' , 'black' );
 
-let myClockTheme2 = new MagicClock( 300, 20 , 250, theme2 );
-myClockTheme2.addCaption( new Date().getDate() , 50 , 2, 'bold 20px Arial' , 'black' );
+// clock with sweeping seconds hand turned off
+let myClockTheme2 = new MagicClock( 300, 20 , 250, theme2, false );
+myClockTheme2.addCaption("date", new Date().getDate() , 50 , 2, 'bold 20px Arial' , 'black' );
 
+
+// clock with caption and event to change caption when triggered
 let myClockTheme1 = new MagicClock( 20, 300 , 250, theme1 );
-myClockTheme1.addCaption( new Date().getDate() , 50 , 2, 'bold 20px Arial' , 'black' );
-myClockTheme1.addCaption( "Rolex" , -30 , 80 , 'bold 20px Courier' , 'black' );
+myClockTheme1.addCaption("date", new Date().getDate() , 50 , 2, 'bold 20px Arial' , 'black' );
+myClockTheme1.addCaption( "brand" ,"Rolex" , -30 , 80 , 'bold 20px Courier' , 'black' );
 
+
+myClockTheme1.addEvent("tick", 19,15,40, ()=>{
+	myClockTheme1.setCaptionText("brand"  , "hello ");
+} );
 
 
 
@@ -66,3 +73,4 @@ myClockTheme1.addCaption( "Rolex" , -30 , 80 , 'bold 20px Courier' , 'black' );
 </body>
 
 </html>
+
