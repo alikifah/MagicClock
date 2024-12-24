@@ -8,11 +8,12 @@
 // ===========================================================================================================
 
 class MagicClock {
-    #clockRadius = 0;
-	
+    #clockRadius = 0;	
     #hours;
     #minutes;
     #seconds;
+    #milliseconds;
+	
     #scale = 0;
     #pivotPointHX = 0;
     #pivotPointHY = 0;
@@ -38,16 +39,44 @@ class MagicClock {
     #timePointMarkerColor;
     #centralPointColor;
 
+    #tickDelay;
+    #isBasicTheme= false;
+     
+    #captions = new Map();
+    #clockEvents = new Map();
 
+	addEvent(id, hour, minute, second, action, isRepeat = true ){		
+		let colockEvent = new ClockEvent(id, hour, minute, second, action, isRepeat);		
+		this.#clockEvents.set(id, colockEvent);	
+	}
+	removeEvent(id){
+		this.#clockEvents.get(id).dispose();
+		this.#clockEvents.delete(id);
+	}
+	#processEvents()
+	{				
+		for (let [id, value] of this.#clockEvents) {
+			if (value.isDue(this.#hours, this.#minutes, this.#seconds ))
+			{
+				console.log(value.hour + "/" + value.minute + "/" + value.second); 
+				value.invoke();
+				if (!value.isRepeat)
+					this.removeEvent(id);
+			}				
+		}
+	}
 
-	#captions = [];
-
-    constructor(PositionX, PositionY, width, theme = null) {
+    constructor(PositionX, PositionY, width, theme = null, isSweeping = true) {
         if (width < 220)
             width = 220;
         this.#canvas = this.#initCanvas(PositionX, PositionY, width);
         this.#ctx = this.#canvas.getContext("2d");
-        if (!this.#isValidTheme(theme)) {
+        if (isSweeping)
+			this.#tickDelay= 60;
+		else
+			this.#tickDelay= 1000;			
+		if (!this.#isValidTheme(theme)) {
+			// load default colors for basic theme
             this.#loadColors("Black", "Black", "Black", "White");
             this.#initializeClockBasic();
         }
@@ -73,9 +102,6 @@ class MagicClock {
         canvas.style.position = "absolute";
         return canvas;
     }
-	
-
-	
 	
     #isValidTheme(theme) {
         if (this.#isObject(theme)) {
@@ -119,13 +145,15 @@ class MagicClock {
         this.#loader.add('BGImg', backgroundImgSrc);
     }
     #onError() {
+		this.#isBasicTheme = true;
 		this.#initializeClockBasic();
 	}
     #loadingComplete() {
+		this.#isBasicTheme = false;
         // get scale from loaded background
 		this.#updateScale();
         this.#loop();
-        setInterval(this.#loop.bind(this), 1000);
+        setInterval(this.#loop.bind(this), this.#tickDelay);
     }
 	#updateScale(){
 		let bgImg = this.#loader.get('BGImg');
@@ -153,38 +181,51 @@ class MagicClock {
 	// main render loop 
     #loop() {
         this.#updateTime();
-        this.#renderBg(this.#ctx);
-        		
+		this.#renderBg(this.#ctx);        		
 		// render captions
 		this.#renderCaptions();		
-
-		this.#renderClock(this.#hours, this.#minutes, this.#seconds);	
+		this.#renderClock(this.#hours, this.#minutes, this.#seconds);				
+		
+		this.#processEvents();
     }
 	
-	#renderCaptions(){
-		for (let i = 0; i < this.#captions.length; i++) {
-			this.#renderText(this.#captions[i].text ,
-						this.#clockRadius +  this.#captions[i].x  ,
-						this.#clockRadius +   this.#captions[i].y ,
-						this.#captions[i].font,
-						this.#captions[i].color
-						);
-		}	
+	#renderCaptions(){		
+		for (let [key, value] of this.#captions) {
+			this.#renderText(value.text ,
+			this.#clockRadius +  value.x  ,
+			this.#clockRadius +   value.y ,
+			value.font,
+			value.color
+			);			
+		}		
 	}
 	
-	addCaption(t, x, y, font = 'bold 20px Arial', color = 'black'){
-		const caption = new Caption(t, x, y, font, color );
-		this.#captions.push(caption);
+	addCaption(id,text, x, y, font = 'bold 20px Arial', color = 'black'){
+		const caption = new Caption(text, x, y, font, color );
+		this.#captions.set(id,caption);
 	}
-	
+	removeCaption(id){
+		this.#captions.delete(id);
+	}	
+	setCaptionPosition(id, x, y){
+		this.#captions.get(id).x=x;
+		this.#captions.get(id).y=y;		
+	}	
+	setCaptionText(id, text){
+		this.#captions.get(id).text=text;
+	}	
+	setCaptionColor(id, color){
+		this.#captions.get(id).color=color;
+	}	
+		
     #renderClock(hour, minute, second) {
-        let hoursHandAngle = this.#getClockAngle(hour, true);
+        let hoursHandAngle = this.#getAngleHours(hour);
         this.#renderHand(this.#ctx, this.#loader.get('hourHandImg'), this.#pivotPointHX, this.#pivotPointHY, this.#clockRadius, this.#clockRadius, this.#scale, hoursHandAngle);
 
-        let minutesHandAngle = this.#getClockAngle(minute, false);
+        let minutesHandAngle = this.#getAngleMinutes(minute);
         this.#renderHand(this.#ctx, this.#loader.get('minuteHandImg'), this.#pivotPointMX, this.#pivotPointMY, this.#clockRadius, this.#clockRadius, this.#scale, minutesHandAngle);
 
-        let secondsHandAngle = this.#getClockAngle(second, false);
+        let secondsHandAngle = this.#getAngleSeconds(second);
         this.#renderHand(this.#ctx, this.#loader.get('secondHandImg'), this.#pivotPointSX, this.#pivotPointSY, this.#clockRadius, this.#clockRadius, this.#scale, secondsHandAngle);
     }
 
@@ -193,16 +234,14 @@ class MagicClock {
         this.#hours = time.getHours();
         this.#minutes = time.getMinutes();
         this.#seconds = time.getSeconds();
+        this.#milliseconds = time.getMilliseconds();		
     }
-
 
 	#renderText(text, x, y, font, color) {
     this.#ctx.font = font; 
     this.#ctx.fillStyle = color; 
     this.#ctx.fillText(text, x, y);
-	
 	}
-	
 	
     //#################################################################
     //#########   Basic themes... (no external images) ##################
@@ -241,25 +280,27 @@ class MagicClock {
         this.#timePointMarkerColor = timePointMarkerColor;
         this.#centralPointColor = centralPointColor;
     }
+	
     #initializeClockBasic() {
         this.#updateTime();
-        this.#renderClockBasic(this.#hours, this.#minutes, this.#seconds);
-        setInterval(function () {
+        this.#loopClockBasic(this.#hours, this.#minutes, this.#seconds);
+	   setInterval(function () {
             this.#cls();
             this.#updateTime();
-            this.#renderClockBasic(this.#hours, this.#minutes, this.#seconds);
-        }.bind(this), 1000);
+            this.#loopClockBasic(this.#hours, this.#minutes, this.#seconds);
+        }.bind(this), this.#tickDelay);		
     }
 
-    #renderClockBasic(hour, minute, second) {
+// main loop of basic clock
+    #loopClockBasic(hour, minute, second) {
         hour += this.#hourHandRotationCorrection;
         minute += this.#secondMinuteHandRotationCorrection;
         second += this.#secondMinuteHandRotationCorrection;
         this.#bGPrimitive();
         this.#frame();
-        let h = this.#getClockAngle(hour);
-        let m = this.#getClockAngle(minute, false);
-        let s = this.#getClockAngle(second, false);
+        let h = this.#getAngleHours(hour);
+        let m = this.#getAngleMinutes(minute);
+        let s = this.#getAngleSeconds(second);
 
         let xH = this.#getCircleX(h, this.#clockRadius * 0.6);
         let yH = this.#getCircleY(h, this.#clockRadius * 0.6);
@@ -275,9 +316,9 @@ class MagicClock {
         this.#line(0 + this.#clockRadius, 0 + this.#clockRadius, xS + this.#clockRadius, yS + this.#clockRadius, 1, this.#secondHandColor);
 
         this.#circle(this.#clockRadius, this.#clockRadius, 5, 1, this.#centralPointColor, true);
-        		
-		// render captions
+        
 		this.#renderCaptions();		
+		this.#processEvents();
 		
 		// draw markers 
         let radius = (this.#clockRadius - this.#shadowWidth - this.#frameWidth) * 0.9;
@@ -301,14 +342,10 @@ class MagicClock {
 
     #bGPrimitive() { this.#circle(this.#clockRadius, this.#clockRadius, this.#clockRadius - this.#shadowWidth - this.#frameWidth, 1, this.#backgroundColor, true); }
     
-	
-	
-	
 	#frame() {
         this.#circle(this.#clockRadius, this.#clockRadius,
             this.#clockRadius - this.#shadowWidth - this.#frameWidth,
-            this.#frameWidth, this.#borderColor);
-			
+            this.#frameWidth, this.#borderColor);			
     }
 
     #line(startX, startY, endX, endY, thickness = 1, color = "black") {
@@ -348,14 +385,33 @@ class MagicClock {
         }
         this.#ctx.restore();
     }
+	
+	// angle used for drawing basic theme
     #getClockAngle(value, isHours = true) {
         let c = 0;
         if (isHours)
-            c = 12;
+		c= 12 ;
         else
-            c = 60;
-        return this.#getRad((360 * value) / c);
+		c= 60  ;		
+        return this.#getRad( (360 * value ) / c );
     }
+
+	// get angle for hours hand adjustment
+     #getAngleHours(value){
+		value = (value * 5) + this.#minutes / 12 ;
+		return this.#getRad( (360 * value ) / 60 );
+     }
+	// get angle for minutes hand adjustment
+     #getAngleMinutes(value){
+		value = value  + this.#seconds / 60  ;
+		return this.#getRad( (360 * value ) / 60 );
+     }
+	// get angle for seconds hand adjustment
+	#getAngleSeconds(value){
+	value = value  + this.#milliseconds / 1000   ;
+	return this.#getRad( (360 * value ) / 60 );
+     }
+			
     #cls() {
 		this.#ctx.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
 	}
@@ -386,7 +442,6 @@ class MagicClock {
     #getRandomColor() {
         return "#" + ((1 << 24) * Math.random() | 0).toString(16);
     }
-
 
 } // end class clock
 
@@ -428,9 +483,6 @@ class imageLoader {
     getAll() { return this.#images; }
 }// end class image loader
 
-
-
-
 class Caption {
 	 constructor(text, x, y, font, color) {
 		this.text=text;
@@ -439,4 +491,49 @@ class Caption {
 		this.font=font;
 		this.color=color;	
 	 }
+}
+
+class ClockEvent {
+	#event;
+	#id;
+	#isTriggered  = false;
+	#lastSecondTriggered=0;
+	 constructor(id, hour, minute, second, action, isRepeat) {
+		this.hour=hour;
+		this.minute=minute;
+		this.second=second;			
+		this.action=action;
+		this.isRepeat=isRepeat;	
+		this.#event = new Event(id);
+		document.addEventListener(id, action);		
+	 }
+	 
+	 invoke(){
+		 document.dispatchEvent(this.#event);
+	 }
+	 
+	 dispose(){		 
+		 document.removeEventListener(this.#id, this.#event );	 
+	 }
+	 
+	 isDue(hours, minutes, seconds)
+	 {
+		 // to prevent triggering the event more than once in the same second
+		 if (this.#isTriggered){
+			if (this.#lastSecondTriggered = seconds)
+				return;
+			else
+				this.#isTriggered = false;
+		 }
+		 // check if event is due
+		 if (this.hour === hours &&
+			this.minute === minutes &&
+			this.second === seconds )
+			{
+				 this.#lastSecondTriggered = seconds;
+				this.#isTriggered = true;
+				return true;
+			}
+		return false;
+	}
 }
